@@ -39,4 +39,8 @@ public class CustomerService {
         );
         customerDao.insertCustomer(customer);
     }
+
+    public void deleteCustomerById(Integer customerId) {
+        customerDao.deleteCustomer(customerId);
+    }
 }
