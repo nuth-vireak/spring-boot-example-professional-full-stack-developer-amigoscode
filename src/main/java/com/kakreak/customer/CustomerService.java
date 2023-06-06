@@ -41,6 +41,12 @@ public class CustomerService {
     }
 
     public void deleteCustomerById(Integer customerId) {
+
+        // check if customerID exist
+        if (!customerDao.exitsPersonWithId(customerId)) {
+            throw new ResourceNotFoundException("Customer " + customerId + " does not exist.");
+        }
+
         customerDao.deleteCustomer(customerId);
     }
 }
