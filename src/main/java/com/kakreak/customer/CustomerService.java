@@ -1,6 +1,7 @@
 package com.kakreak.customer;
 
 import com.kakreak.exception.DuplicateResourceException;
+import com.kakreak.exception.RequestValidationException;
 import com.kakreak.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -48,5 +49,32 @@ public class CustomerService {
         }
 
         customerDao.deleteCustomer(customerId);
+    }
+
+    public void updateCustomerById(Integer customerId, CustomerUpdateRequest customerUpdateRequest) {
+
+        Customer customer = getCustomerById(customerId);
+
+        boolean ischanged = false;
+
+        if (customerUpdateRequest.name() != null && !customerUpdateRequest.name().equals(customer.getName())) {
+            customer.setName(customerUpdateRequest.name());
+            ischanged = true;
+        }
+
+        if (customerUpdateRequest.email() != null && !customerUpdateRequest.email().equals(customer.getEmail())) {
+            customer.setEmail(customerUpdateRequest.email());
+            ischanged = true;
+        }
+
+        if (customerUpdateRequest.age() != null && !customerUpdateRequest.age().equals(customer.getAge())) {
+            customer.setAge(customerUpdateRequest.age());
+            ischanged = true;
+        }
+
+        if (!ischanged)
+            throw new RequestValidationException("No data changed");
+
+        customerDao.updateCustomer(customer);
     }
 }
