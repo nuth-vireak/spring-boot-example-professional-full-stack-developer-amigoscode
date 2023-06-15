@@ -10,14 +10,20 @@ import java.util.Optional;
 public class CustomerJDBCDataAccessService implements CustomerDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final CustomerRowMapper customerRowMapper;
 
-    public CustomerJDBCDataAccessService(JdbcTemplate jdbcTemplate) {
+    public CustomerJDBCDataAccessService(JdbcTemplate jdbcTemplate, CustomerRowMapper customerRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.customerRowMapper = customerRowMapper;
     }
 
     @Override
     public List<Customer> selectAllCustomers() {
-        return null;
+        var sql = """
+                SELECT id, name, email, age
+                FROM customer
+                """;
+        return jdbcTemplate.query(sql, customerRowMapper);
     }
 
     @Override
