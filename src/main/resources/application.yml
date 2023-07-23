@@ -18,3 +18,6 @@ spring:
     show-sql: true
   main:
     web-application-type: servlet
+  output:
+    ansi:
+      enabled: always
