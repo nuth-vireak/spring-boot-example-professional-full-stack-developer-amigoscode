@@ -3,20 +3,25 @@ services:
     container_name: postgres
     image: postgres
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: 1234
-        PGDATA: /data/postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
     ports:
-        - "5332:5432"
+      - "5332:5432"
     networks:
       - db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
-    db:
-        driver: bridge
+  db:
+    driver: bridge
 
 volumes:
   db:
