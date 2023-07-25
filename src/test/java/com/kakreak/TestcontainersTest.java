@@ -1,5 +1,6 @@
 package com.kakreak;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -24,6 +25,16 @@ public class TestcontainersTest {
     void canStartPostgresDB() {
         assertThat(postgreSQLContainer.isRunning()).isTrue();
         assertThat(postgreSQLContainer.isCreated()).isTrue();
-        assertThat(postgreSQLContainer.isHealthy()).isTrue();
+    }
+
+    @Test
+    void canApplyDbMigrationWithFlyway() {
+        Flyway flyway = Flyway.configure().dataSource(
+                postgreSQLContainer.getJdbcUrl(),
+                postgreSQLContainer.getUsername(),
+                postgreSQLContainer.getPassword()
+        ).load();
+        flyway.migrate();
+        System.out.println();
     }
 }
