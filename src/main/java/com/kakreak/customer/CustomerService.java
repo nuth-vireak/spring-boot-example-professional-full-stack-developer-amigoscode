@@ -13,7 +13,7 @@ public class CustomerService {
 
     private final CustomerDao customerDao;
 
-    public CustomerService(@Qualifier("jdbc") CustomerDao customerDao) {
+    public CustomerService(@Qualifier("list") CustomerDao customerDao) {
         this.customerDao = customerDao;
     }
 
