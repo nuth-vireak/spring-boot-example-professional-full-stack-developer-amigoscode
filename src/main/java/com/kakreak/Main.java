@@ -17,22 +17,22 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 
-    @Bean
-    CommandLineRunner runner(CustomerRepository customerRepository) {
-        return args -> {
-
-            var faker = new Faker();
-            Random random = new Random();
-            Name name = faker.name();
-            String firstName = name.firstName();
-            String lastName = name.lastName();
-            Customer customer = new Customer(
-                    firstName + " " + lastName,
-                    firstName.toLowerCase() + "." + lastName.toLowerCase() + "@amigoscode.com",
-                    random.nextInt(16, 99)
-            );
-            customerRepository.save(customer);
-
-        };
-    }
+//    @Bean
+//    CommandLineRunner runner(CustomerRepository customerRepository) {
+//        return args -> {
+//
+//            var faker = new Faker();
+//            Random random = new Random();
+//            Name name = faker.name();
+//            String firstName = name.firstName();
+//            String lastName = name.lastName();
+//            Customer customer = new Customer(
+//                    firstName + " " + lastName,
+//                    firstName.toLowerCase() + "." + lastName.toLowerCase() + "@amigoscode.com",
+//                    random.nextInt(16, 99)
+//            );
+//            customerRepository.save(customer);
+//
+//        };
+//    }
 }
