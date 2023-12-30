@@ -95,4 +95,151 @@ public class CustomerIntegrationTest {
                 })
                 .isEqualTo(expectedCustomer);
     }
+
+    @Test
+    void canDeleteCustomer() {
+        // create a registration request
+        Faker faker = new Faker();
+
+        String name = faker.name().fullName();
+        String email = faker.name().lastName() + UUID.randomUUID() + "@football.com";
+        int age = RANDOM.nextInt(16, 99);
+
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+                name,
+                email,
+                age
+        );
+
+        // send a post request
+        webTestClient.post()
+                .uri("/api/v1/customers/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(request), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        // get all customers
+        List<Customer> allCustomers = webTestClient.get()
+                .uri("/api/v1/customers/")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        // get customer by id
+        int id = allCustomers.stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(Customer::getId)
+                .findFirst()
+                .orElseThrow();
+
+        // delete customer by id
+        webTestClient.delete()
+                .uri("/api/v1/customers/{customerId}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webTestClient.get()
+                .uri("/api/v1/customers/{customerId}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void canUpdateCustomer() {
+        // create a registration request
+        Faker faker = new Faker();
+
+        String name = faker.name().fullName();
+        String email = faker.name().lastName() + UUID.randomUUID() + "@football.com";
+        int age = RANDOM.nextInt(16, 99);
+
+        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+                name,
+                email,
+                age
+        );
+
+        // send a post request
+        webTestClient.post()
+                .uri("/api/v1/customers/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(request), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        // get all customers
+        List<Customer> allCustomers = webTestClient.get()
+                .uri("/api/v1/customers/")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        // get customer by id
+        int id = allCustomers.stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(Customer::getId)
+                .findFirst()
+                .orElseThrow();
+
+        // update customer by id
+        String newName = faker.name().fullName();
+        String newEmail = faker.name().lastName() + UUID.randomUUID() + "@newfootball.com";
+        int newAge = RANDOM.nextInt(16, 99);
+
+        CustomerRegistrationRequest updateRequest = new CustomerRegistrationRequest(
+                newName,
+                newEmail,
+                newAge
+        );
+
+        webTestClient.put()
+                .uri("/api/v1/customers/{customerId}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(updateRequest), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        // get customer by id
+        Customer expectedCustomer = new Customer(
+                newName,
+                newEmail,
+                newAge
+        );
+
+        expectedCustomer.setId(id);
+
+        Customer updatedCustomer = webTestClient.get()
+                .uri("/api/v1/customers/{customerId}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(Customer.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(updatedCustomer).isEqualTo(expectedCustomer);
+    }
+
 }
